@@ -1,5 +1,5 @@
 {
-  "name": "web-game",
+  "name": "let-me-know",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -19,6 +19,8 @@
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.10.0",
     "react-window": "^1.8.9",
+    "vite-plugin-pwa": "^0.16.7",
+    "workbox-window": "^7.0.0",
     "zustand": "^4.4.2"
   },
   "devDependencies": {
