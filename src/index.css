@@ -1,3 +1,4 @@
+@import './theme.css';
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -8,4 +9,15 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+}
+.anticon {
+  color: gray;
+  cursor: pointer;
+}
+
+.anticon:active {
+  color: var(--primary-color);
+}
+.anticon:visited {
+  color: black;
 }
