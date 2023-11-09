@@ -17,6 +17,8 @@ export default defineConfig({
       },
     }),
   ],
+  build: { outDir: 'doc' },
+  base: '/LetMeKnow',
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),

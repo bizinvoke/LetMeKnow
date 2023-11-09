@@ -17,12 +17,15 @@ function Home() {
   const [images, setImages] = useState<string[]>([]);
 
   const handleSubmit = () => {
-    const messages = [];
+    const messages: any[] = [];
     images.forEach((i) => {
       messages.push({
         role: 'user',
         content: [
-          { type: 'text', text: 'What’s in this image?' },
+          {
+            type: 'text',
+            text: '识别图片中的题目，并批改作业，详细解释每道题目',
+          },
           {
             type: 'image_url',
             image_url: {
