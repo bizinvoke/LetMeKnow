@@ -17,7 +17,7 @@ export default defineConfig({
       },
     }),
   ],
-  build: { outDir: 'doc' },
+  build: { outDir: 'docs' },
   base: '/LetMeKnow',
   resolve: {
     alias: {
