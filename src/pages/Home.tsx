@@ -4,7 +4,7 @@ import {
   MenuOutlined,
   RadiusSettingOutlined,
 } from '@ant-design/icons';
-import { Button, Divider, Drawer, Form, Image, Select } from 'antd';
+import { Button, Divider, Drawer, Form, Image, Input, Select } from 'antd';
 import { Fragment, useState } from 'react';
 const { Option } = Select;
 function Home() {
@@ -14,6 +14,7 @@ function Home() {
   const [language, setLanguage] = useState(1);
   const [type, setType] = useState(1);
   const [content, setContent] = useState('');
+  const [key, setKey] = useState('');
   const [images, setImages] = useState<string[]>([]);
 
   const handleSubmit = () => {
@@ -39,7 +40,7 @@ function Home() {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${import.meta.env.VITE_OPEN_AI_KEY}`,
+        Authorization: `Bearer ${key}`,
       },
       body: JSON.stringify({
         model: 'gpt-4-vision-preview',
@@ -70,6 +71,10 @@ function Home() {
       onClose={() => setOpen(false)}
       open={open}
     >
+      <Form.Item name="key" label="密钥">
+        <Input value={key} onChange={(e) => setKey(e.target.value)} />
+      </Form.Item>
+      <Divider />
       <Form.Item name="type" label="模式">
         <Select onChange={setType} value={type} defaultValue={1}>
           <Option value={1}>简单</Option>
