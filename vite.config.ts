@@ -11,7 +11,6 @@ export default defineConfig({
   plugins: [
     react(),
     VitePWA({
-      base: '/LetMeKnow',
       registerType: 'autoUpdate',
       workbox: {
         sourcemap: true,
