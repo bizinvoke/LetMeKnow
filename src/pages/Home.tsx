@@ -92,7 +92,7 @@ function Home() {
 
   const optionDrawer = (
     <Drawer
-      title="Options"
+      title={`Options(${__APP_VERSION__})`}
       placement="left"
       width="80vw"
       onClose={() => setOpen(false)}

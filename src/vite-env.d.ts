@@ -7,3 +7,4 @@ type PureArray = PureObject[];
 
 declare const __DIR_PAGES__: string;
 declare const __DIR_SRC__: string;
+declare const __APP_VERSION__: string;

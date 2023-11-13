@@ -1,7 +1,11 @@
 import react from '@vitejs/plugin-react';
+import { execSync } from 'child_process';
 import path from 'path';
 import { defineConfig } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
+const commitHash = execSync('git rev-parse --short HEAD', {
+  encoding: 'utf8',
+}).trim();
 
 export default defineConfig({
   plugins: [
@@ -28,5 +32,6 @@ export default defineConfig({
   define: {
     __DIR_PAGES__: JSON.stringify(path.resolve(__dirname, './src/pages')),
     __DIR_SRC__: JSON.stringify(path.resolve(__dirname, './src')),
+    __APP_VERSION__: commitHash,
   },
 });
