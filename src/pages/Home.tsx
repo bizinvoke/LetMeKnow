@@ -23,10 +23,10 @@ import {
   Switch,
   Typography,
 } from 'antd';
-import { Fragment, useState } from 'react';
-const { Option } = Select;
+import { Fragment, useEffect, useState } from 'react';
 const { Text } = Typography;
 function Home() {
+  const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [isOpenTitle, setIsOpenTitle] = useState(false);
@@ -34,6 +34,7 @@ function Home() {
   const [hasAttached, setHasAttached] = useState(false);
   const [isOpenAttached, setIsOpenAttached] = useState(false);
   const [isRotate, setIsRotate] = useState(false);
+  const [isRotateRender, setIsRotateRender] = useState(false);
   const [language, setLanguage] = useState(1);
   const [type, setType] = useState(1);
   const [subject, setSubject] = useState(1);
@@ -44,16 +45,26 @@ function Home() {
   const [questionImages, setQuestionImages] = useState<string[]>([]);
   const [attachedImages, setAttachedImages] = useState<string[]>([]);
 
+  useEffect(() => {
+    setLoading(true);
+    setTimeout(() => {
+      setIsRotateRender(isRotate);
+      setLoading(false);
+    }, 400);
+  }, [isRotate]);
+
   const handleSubmit = () => {
+    setLoading(true);
     const messages: any[] = [];
+    messages.push({
+      role: 'system',
+      content: `请按照下面的约束条件，对上传的内容进行理解并给出解读和答案。图片中的文本语言为「英语」,图片中的文本为从左到右、从上到下的格式排列,如果遇到技术问题无法打开某张图片或者无法从某张图片中提取文本内容时，请忽略该图片。用英语给出问题的答案，请用中文对每一题的答案进行详细解释并写在答案后边用『』包起来,解读和解答的过程中，可对原文本进行复述,如果问题是填空题，请用英语给出填空题的答案
+        `,
+    });
     images.forEach((i) => {
       messages.push({
         role: 'user',
         content: [
-          {
-            type: 'text',
-            text: '识别图片中的题目，并批改作业，详细解释每道题目',
-          },
           {
             type: 'image_url',
             image_url: {
@@ -78,7 +89,7 @@ function Home() {
     })
       .then((response) => response.json())
       .then((data) => {
-        setIsRotate((old) => !old);
+        setIsRotate(true);
         console.log(data);
 
         if (data?.choices[0]?.message?.content) {
@@ -87,6 +98,9 @@ function Home() {
       })
       .catch((error) => {
         console.error(error);
+      })
+      .finally(() => {
+        setLoading(false);
       });
   };
 
@@ -161,12 +175,15 @@ function Home() {
             transform: isRotate ? 'rotateY(180deg)' : undefined,
           }}
         >
-          {isRotate ? (
+          {isRotateRender ? (
             <div
-              className="h-full w-full rounded border bg-slate-100 p-2"
+              className="h-full w-full  whitespace-pre-wrap rounded border bg-slate-100 p-2"
               style={{ transform: 'rotateY(180deg)' }}
-              dangerouslySetInnerHTML={{ __html: content }}
-            ></div>
+            >
+              <div className="h-full w-full overflow-auto whitespace-pre-wrap rounded  p-2">
+                {content}
+              </div>
+            </div>
           ) : (
             <div className="flex h-full w-full flex-col items-center">
               <div
@@ -184,7 +201,7 @@ function Home() {
                 </Text>
                 <div className="flex items-center">
                   <Text type="secondary" strong>
-                    精准模式：
+                    精准模式:
                   </Text>
                   <Switch
                     checked={type === 2}
@@ -266,9 +283,21 @@ function Home() {
           )}
         </div>
       </div>
-      <div className="w-full px-2 pb-2">
-        <Button onClick={handleSubmit} className="w-full" type="primary">
-          Submit
+      <div className="flex w-full gap-2 px-2 pb-2">
+        {content && (
+          <Button onClick={() => setIsRotate((old) => !old)} disabled={loading}>
+            Toggle
+          </Button>
+        )}
+
+        <Button
+          onClick={handleSubmit}
+          className="w-full"
+          type="primary"
+          loading={loading}
+          disabled={!key}
+        >
+          {content ? 'Continue to the next' : 'Submit'}
         </Button>
       </div>
       {optionDrawer}
