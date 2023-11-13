@@ -103,23 +103,21 @@ function Home() {
       </Form.Item>
       <Divider />
       <Form.Item name="subject" label="科目">
-        <Select onChange={setSubject} value={subject} defaultValue={1}>
-          {subjectOptions.map((i) => (
-            <Option value={i.value} key={i.value}>
-              {i.label}
-            </Option>
-          ))}
-        </Select>
+        <Select
+          onChange={setSubject}
+          value={subject}
+          defaultValue={1}
+          options={subjectOptions}
+        />
       </Form.Item>
       <Divider />
       <Form.Item name="language" label="输出">
-        <Select onChange={setLanguage} value={language} defaultValue={1}>
-          {languageOptions.map((i) => (
-            <Option value={i.value} key={i.value}>
-              {i.label}
-            </Option>
-          ))}
-        </Select>
+        <Select
+          onChange={setLanguage}
+          value={language}
+          defaultValue={1}
+          options={languageOptions}
+        ></Select>
       </Form.Item>
       <Divider />
     </Drawer>

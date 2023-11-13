@@ -16,13 +16,13 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      // workbox: {
-      //   sourcemap: true,
-      //   globPatterns: ['**/*.{css,js,html,svg,png,ico,txt,woff2}'],
-      //   ignoreURLParametersMatching: [/.*/],
-      //   // globIgnores:[],
-      //   maximumFileSizeToCacheInBytes: 50000000,
-      // },
+      workbox: {
+        sourcemap: true,
+        globPatterns: ['**/*.{css,js,html,svg,png,ico,txt,woff2}'],
+        ignoreURLParametersMatching: [/.*/],
+        // globIgnores:[],
+        maximumFileSizeToCacheInBytes: 50000000,
+      },
     }),
   ],
   build: { outDir: 'docs' },
