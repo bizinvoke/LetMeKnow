@@ -1,4 +1,5 @@
 import ImageUploadInput from '@/components/common/upload';
+import { useFirebase } from '@/hook/controller/common/useFirebase';
 import {
   languageMap,
   languageOptions,
@@ -24,6 +25,7 @@ import {
   Typography,
 } from 'antd';
 import { Fragment, useEffect, useState } from 'react';
+
 const { Text } = Typography;
 function Home() {
   const [loading, setLoading] = useState(false);
@@ -52,6 +54,8 @@ function Home() {
       setLoading(false);
     }, 400);
   }, [isRotate]);
+
+  const { uploadString, storageReference } = useFirebase();
 
   const handleSubmit = () => {
     setLoading(true);
@@ -322,7 +326,16 @@ function Home() {
       />
       <ImageUploadInput
         isOpen={isOpenAttached}
-        onChange={(files) => setAttachedImages((old) => [...old, ...files])}
+        onChange={(files) => {
+          console.log(files[0]);
+
+          uploadString(storageReference('test123'), files[0], 'base64').then(
+            (snapshot) => {
+              console.log('Uploaded a base64 string!', snapshot);
+            },
+          );
+        }}
+        // onChange={(files) => setAttachedImages((old) => [...old, ...files])}
         onFinally={() => setIsOpenAttached(false)}
         multiple={false}
       />
