@@ -20,6 +20,7 @@ import {
   Form,
   Image,
   Input,
+  message,
   Select,
   Switch,
   Typography,
@@ -55,7 +56,17 @@ function Home() {
     }, 400);
   }, [isRotate]);
 
-  const { uploadString, storageReference } = useFirebase();
+  const { uploadBytes, storageReference, onLoginWithGoogle } = useFirebase();
+
+  const handleClear = () => {
+    setImages([]);
+    setTitleImages([]);
+    setImages([]);
+    setQuestionImages([]);
+    setAttachedImages([]);
+    setContent('');
+    setIsRotate(false);
+  };
 
   const handleSubmit = () => {
     setLoading(true);
@@ -169,7 +180,7 @@ function Home() {
             setOpen(true);
           }}
         />
-        <RadiusSettingOutlined />
+        <RadiusSettingOutlined onClick={onLoginWithGoogle} />
       </div>
       <div className="w-full flex-1 overflow-hidden p-2">
         <div
@@ -295,7 +306,7 @@ function Home() {
         )}
 
         <Button
-          onClick={handleSubmit}
+          onClick={content ? handleClear : handleSubmit}
           className="w-full"
           type="primary"
           loading={loading}
@@ -307,33 +318,37 @@ function Home() {
       {optionDrawer}
       <ImageUploadInput
         isOpen={isOpen}
-        onChange={setImages}
+        onChange={(files) => setImages(files.map((i) => i.base64))}
         onFinally={() => setIsOpen(false)}
         isCompress
         multiple={false}
       />
       <ImageUploadInput
         isOpen={isOpenQuestion}
-        onChange={(files) => setQuestionImages((old) => [...old, ...files])}
+        onChange={(files) =>
+          setQuestionImages((old) => [...old, ...files.map((i) => i.base64)])
+        }
         onFinally={() => setIsOpenQuestion(false)}
         multiple={false}
       />
       <ImageUploadInput
         isOpen={isOpenTitle}
-        onChange={(files) => setTitleImages((old) => [...old, ...files])}
+        onChange={(files) =>
+          setTitleImages((old) => [...old, ...files.map((i) => i.base64)])
+        }
         onFinally={() => setIsOpenTitle(false)}
         multiple={false}
       />
       <ImageUploadInput
         isOpen={isOpenAttached}
         onChange={(files) => {
-          console.log(files[0]);
-
-          uploadString(storageReference('test123'), files[0], 'base64').then(
-            (snapshot) => {
+          uploadBytes(storageReference('test123.jpg'), files[0].file)
+            .then((snapshot) => {
               console.log('Uploaded a base64 string!', snapshot);
-            },
-          );
+            })
+            .catch((err) => {
+              message.error(err);
+            });
         }}
         // onChange={(files) => setAttachedImages((old) => [...old, ...files])}
         onFinally={() => setIsOpenAttached(false)}

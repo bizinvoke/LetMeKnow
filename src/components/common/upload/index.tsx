@@ -5,12 +5,13 @@ import { useEffect, useRef } from 'react';
 
 export type UploadFilePathModel = {
   createDate: dayjs.Dayjs;
-  path: string;
-  url: string;
+  base64: string;
+  file: File;
+  id: string;
 };
 
 type Props = {
-  onChange: (files: string[]) => void;
+  onChange: (files: UploadFilePathModel[]) => void;
   // onSuccess: (files: UploadFilePathModel[]) => void;
   onFinally?: () => void;
   isCompress?: boolean;
@@ -138,12 +139,19 @@ export default function ImageUploadInput({
     });
   }
 
-  async function convertFilesToBase64(files: File[]): Promise<string[]> {
-    const base64Strings: string[] = [];
+  async function convertFilesToBase64(
+    files: File[],
+  ): Promise<UploadFilePathModel[]> {
+    const base64Strings: UploadFilePathModel[] = [];
 
     for (const file of files) {
       const base64String = await readFileAsBase64(file);
-      base64Strings.push(base64String);
+      base64Strings.push({
+        base64: base64String,
+        file,
+        createDate: dayjs(),
+        id: base64String.slice(-10),
+      });
     }
 
     return base64Strings;

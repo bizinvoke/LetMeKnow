@@ -1,10 +1,8 @@
-// Import the functions you need from the SDKs you need
 import { initializeApp } from 'firebase/app';
-import { getStorage, ref, uploadString } from 'firebase/storage';
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
+import { initializeAppCheck, ReCaptchaV3Provider } from 'firebase/app-check';
+import { getAuth, GoogleAuthProvider, signInWithRedirect } from 'firebase/auth';
+import { getStorage, ref, uploadBytes } from 'firebase/storage';
 
-// Your web app's Firebase configuration
 const firebaseConfig = {
   apiKey: 'AIzaSyDWw-YYGVLWjeeDPhwfp9R8Cn7cc12E9tg',
   authDomain: 'bizinvoke-demo.firebaseapp.com',
@@ -14,15 +12,27 @@ const firebaseConfig = {
   appId: '1:781697815700:web:e37e6e00dffe980de81081',
 };
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
+
+const storage = getStorage();
 const resultStorage = getStorage(app, 'gs://bizinvoke-demo-ocr-result-bucket/');
 
-export const useFirebase = () => {
-  const storage = getStorage();
+const auth = getAuth(app);
+const provider = new GoogleAuthProvider();
 
+self.FIREBASE_APPCHECK_DEBUG_TOKEN = true;
+const appCheck = initializeAppCheck(app, {
+  provider: new ReCaptchaV3Provider('6LcpVQ4pAAAAAFLWcA48i0d9vas73dI-bJGwVeBR'),
+
+  // Optional argument. If true, the SDK automatically refreshes App Check
+  // tokens as needed.
+  isTokenAutoRefreshEnabled: true,
+});
+
+export const useFirebase = () => {
   return {
-    uploadString,
+    onLoginWithGoogle: () => signInWithRedirect(auth, provider),
+    uploadBytes,
     resultStorage,
     storageReference: (name: string) => ref(storage, name),
   };
