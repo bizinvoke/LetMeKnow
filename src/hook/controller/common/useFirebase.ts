@@ -28,7 +28,7 @@ const resultStorage = getStorage(app, 'gs://bizinvoke-demo-ocr-result-bucket/');
 const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
 
-self.FIREBASE_APPCHECK_DEBUG_TOKEN = true;
+// self.FIREBASE_APPCHECK_DEBUG_TOKEN = true;
 const appCheck = initializeAppCheck(app, {
   provider: new ReCaptchaV3Provider('6LcpVQ4pAAAAAFLWcA48i0d9vas73dI-bJGwVeBR'),
 
