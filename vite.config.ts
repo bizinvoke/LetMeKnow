@@ -16,6 +16,7 @@ export default defineConfig({
     react(),
     VitePWA({
       base: '/LetMeKnow',
+      scope: '/LetMeKnow/',
       buildBase: '/LetMeKnow/',
       registerType: 'autoUpdate',
       manifest: {
