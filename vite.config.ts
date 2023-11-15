@@ -15,12 +15,12 @@ export default defineConfig({
   plugins: [
     react(),
     VitePWA({
-      base: '/LetMeKnow',
+      base: '/',
       registerType: 'autoUpdate',
       manifest: {
         name: 'LetMeKnow',
         short_name: 'LetMeKnow',
-        start_url: '/',
+        start_url: '/LetMeKnow/',
         display: 'standalone',
         background_color: '#0175C2',
         theme_color: '#0175C2',
