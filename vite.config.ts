@@ -52,7 +52,7 @@ export default defineConfig({
         ],
       },
       outDir: 'docs',
-      buildBase: '/docs/',
+      buildBase: '/',
       workbox: {
         globPatterns: ['**/*.{css,js,html,svg,png,ico,txt,woff2}'],
         ignoreURLParametersMatching: [/.*/],
