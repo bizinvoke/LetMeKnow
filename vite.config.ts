@@ -16,7 +16,7 @@ export default defineConfig({
     react(),
     VitePWA({
       base: '/LetMeKnow',
-      buildBase: '/LetMeKnow/docs',
+      buildBase: '/docs',
       registerType: 'autoUpdate',
       manifest: {
         name: 'LetMeKnow',
