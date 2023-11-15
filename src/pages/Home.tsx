@@ -1,4 +1,6 @@
-import ImageUploadInput from '@/components/common/upload';
+import ImageUploadInput, {
+  UploadFilePathModel,
+} from '@/components/common/upload';
 import { useFirebase } from '@/hook/controller/common/useFirebase';
 import {
   languageMap,
@@ -6,6 +8,7 @@ import {
   subjectMap,
   subjectOptions,
 } from '@/types/home/map';
+import { readBlobAsync } from '@/util/object';
 import {
   CameraFilled,
   MenuOutlined,
@@ -43,10 +46,14 @@ function Home() {
   const [subject, setSubject] = useState(1);
   const [content, setContent] = useState('');
   const [key, setKey] = useState('');
-  const [images, setImages] = useState<string[]>([]);
-  const [titleImages, setTitleImages] = useState<string[]>([]);
-  const [questionImages, setQuestionImages] = useState<string[]>([]);
-  const [attachedImages, setAttachedImages] = useState<string[]>([]);
+  const [images, setImages] = useState<UploadFilePathModel[]>([]);
+  const [titleImages, setTitleImages] = useState<UploadFilePathModel[]>([]);
+  const [questionImages, setQuestionImages] = useState<UploadFilePathModel[]>(
+    [],
+  );
+  const [attachedImages, setAttachedImages] = useState<UploadFilePathModel[]>(
+    [],
+  );
 
   useEffect(() => {
     setLoading(true);
@@ -56,7 +63,13 @@ function Home() {
     }, 400);
   }, [isRotate]);
 
-  const { uploadBytes, storageReference, onLoginWithGoogle } = useFirebase();
+  const {
+    uploadBytes,
+    downloadFile,
+    storageReference,
+    onLoginWithGoogle,
+    user,
+  } = useFirebase();
 
   const handleClear = () => {
     setImages([]);
@@ -68,7 +81,7 @@ function Home() {
     setIsRotate(false);
   };
 
-  const handleSubmit = () => {
+  const simpleAnswer = async () => {
     setLoading(true);
     const messages: any[] = [];
     messages.push({
@@ -117,6 +130,74 @@ function Home() {
       .finally(() => {
         setLoading(false);
       });
+  };
+
+  const preciseAnswer = async () => {
+    if (titleImages.length === 0) {
+      message.error('请上传题目');
+      return;
+    }
+    if (questionImages.length === 0) {
+      message.error('请上传问题');
+      return;
+    }
+    setLoading(true);
+
+    try {
+      const titlePromises = titleImages.map(async (i) => {
+        const file = await downloadFile(`${i.file.name}.txt`);
+        try {
+          const fileContent = await readBlobAsync(file);
+          return fileContent;
+        } catch (error) {
+          console.error('读取title文件时发生错误:', error);
+          return '';
+        }
+      });
+
+      const questionPromises = questionImages.map(async (i) => {
+        const file = await downloadFile(`${i.file.name}.txt`);
+        try {
+          const fileContent = await readBlobAsync(file);
+          return fileContent;
+        } catch (error) {
+          console.error('读取title文件时发生错误:', error);
+          return '';
+        }
+      });
+
+      const titles = await Promise.all(titlePromises);
+      const questions = await Promise.all(questionPromises);
+
+      console.log('题目:', titles);
+      console.log('问题:', questions);
+    } catch (error) {
+      console.error('图片解析发生错误:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSubmit = () => {
+    type === 1 ? simpleAnswer() : preciseAnswer();
+  };
+
+  const onUploadImage = (
+    file: File,
+    handleSuccess: () => void,
+    handleError: () => void,
+  ) => {
+    setLoading(true);
+    uploadBytes(storageReference(file.name), file)
+      .then((snapshot) => {
+        handleSuccess();
+        console.log('Uploaded!', snapshot);
+      })
+      .catch((err) => {
+        handleError();
+        message.error(`${file.name}上传失败，请重试:${err}`);
+      })
+      .finally(() => setLoading(false));
   };
 
   const optionDrawer = (
@@ -180,7 +261,11 @@ function Home() {
             setOpen(true);
           }}
         />
-        <RadiusSettingOutlined onClick={onLoginWithGoogle} />
+        {user === undefined ? (
+          <RadiusSettingOutlined onClick={onLoginWithGoogle} />
+        ) : (
+          user.displayName
+        )}
       </div>
       <div className="w-full flex-1 overflow-hidden p-2">
         <div
@@ -240,7 +325,7 @@ function Home() {
                     </div>
                     <div className="flex flex-wrap gap-2">
                       {titleImages.map((i) => (
-                        <Fragment key={i.slice(10)}>{imageBox(i)}</Fragment>
+                        <Fragment key={i.id}>{imageBox(i.base64)}</Fragment>
                       ))}
                       {uploadBox(() => setIsOpenTitle(true))}
                     </div>
@@ -253,7 +338,7 @@ function Home() {
                       </div>
                       <div className="flex flex-wrap gap-2">
                         {attachedImages.map((i) => (
-                          <Fragment key={i.slice(10)}>{imageBox(i)}</Fragment>
+                          <Fragment key={i.id}>{imageBox(i.base64)}</Fragment>
                         ))}
                         {uploadBox(() => setIsOpenAttached(true))}
                       </div>
@@ -267,7 +352,7 @@ function Home() {
                     </div>
                     <div className="flex flex-wrap gap-2">
                       {questionImages.map((i) => (
-                        <Fragment key={i.slice(10)}>{imageBox(i)}</Fragment>
+                        <Fragment key={i.id}>{imageBox(i.base64)}</Fragment>
                       ))}
                       {uploadBox(() => setIsOpenQuestion(true))}
                     </div>
@@ -289,7 +374,7 @@ function Home() {
                   >
                     <Divider />
                     {images.map((i) => (
-                      <Fragment key={i.slice(10)}>{imageBox(i)}</Fragment>
+                      <Fragment key={i.id}>{imageBox(i.base64)}</Fragment>
                     ))}
                   </div>
                 </>
@@ -318,37 +403,49 @@ function Home() {
       {optionDrawer}
       <ImageUploadInput
         isOpen={isOpen}
-        onChange={(files) => setImages(files.map((i) => i.base64))}
+        onChange={(files) => setImages(files)}
         onFinally={() => setIsOpen(false)}
         isCompress
         multiple={false}
       />
       <ImageUploadInput
         isOpen={isOpenQuestion}
-        onChange={(files) =>
-          setQuestionImages((old) => [...old, ...files.map((i) => i.base64)])
-        }
+        onChange={(files) => {
+          setQuestionImages((old) => [...old, ...files]);
+          const file = files[0].file;
+          onUploadImage(
+            file,
+            () => {},
+            () => {
+              setQuestionImages((old) =>
+                old.filter((i) => i.id !== files[0].id),
+              );
+            },
+          );
+        }}
         onFinally={() => setIsOpenQuestion(false)}
         multiple={false}
       />
       <ImageUploadInput
         isOpen={isOpenTitle}
-        onChange={(files) =>
-          setTitleImages((old) => [...old, ...files.map((i) => i.base64)])
-        }
+        onChange={(files) => {
+          setTitleImages((old) => [...old, ...files]);
+          const file = files[0].file;
+          onUploadImage(
+            file,
+            () => {},
+            () => {
+              setTitleImages((old) => old.filter((i) => i.id !== files[0].id));
+            },
+          );
+        }}
         onFinally={() => setIsOpenTitle(false)}
         multiple={false}
       />
       <ImageUploadInput
         isOpen={isOpenAttached}
         onChange={(files) => {
-          uploadBytes(storageReference('test123.jpg'), files[0].file)
-            .then((snapshot) => {
-              console.log('Uploaded a base64 string!', snapshot);
-            })
-            .catch((err) => {
-              message.error(err);
-            });
+          setAttachedImages((old) => [...old, ...files]);
         }}
         // onChange={(files) => setAttachedImages((old) => [...old, ...files])}
         onFinally={() => setIsOpenAttached(false)}

@@ -1,7 +1,15 @@
+import { useMount } from 'ahooks';
 import { initializeApp } from 'firebase/app';
 import { initializeAppCheck, ReCaptchaV3Provider } from 'firebase/app-check';
-import { getAuth, GoogleAuthProvider, signInWithRedirect } from 'firebase/auth';
-import { getStorage, ref, uploadBytes } from 'firebase/storage';
+import {
+  getAuth,
+  GoogleAuthProvider,
+  onAuthStateChanged,
+  signInWithRedirect,
+  User,
+} from 'firebase/auth';
+import { getBlob, getStorage, ref, uploadBytes } from 'firebase/storage';
+import { useState } from 'react';
 
 const firebaseConfig = {
   apiKey: 'AIzaSyDWw-YYGVLWjeeDPhwfp9R8Cn7cc12E9tg',
@@ -30,10 +38,23 @@ const appCheck = initializeAppCheck(app, {
 });
 
 export const useFirebase = () => {
+  const [user, setUser] = useState<User>();
+
+  useMount(() => {
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setUser(user);
+      } else {
+        setUser(undefined);
+      }
+    });
+  });
+
   return {
+    user,
     onLoginWithGoogle: () => signInWithRedirect(auth, provider),
     uploadBytes,
-    resultStorage,
     storageReference: (name: string) => ref(storage, name),
+    downloadFile: (name: string) => getBlob(ref(resultStorage, name)),
   };
 };
