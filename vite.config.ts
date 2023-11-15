@@ -16,6 +16,40 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
+      manifest: {
+        name: 'LetMeKnow',
+        short_name: 'LetMeKnow',
+        start_url: '/LetMeKnow',
+        display: 'standalone',
+        background_color: '#0175C2',
+        theme_color: '#0175C2',
+        description: 'LetMeKnow.',
+        orientation: 'portrait',
+        icons: [
+          {
+            src: 'icons/Icon-192.png',
+            sizes: '192x192',
+            type: 'image/png',
+          },
+          {
+            src: 'icons/Icon-512.png',
+            sizes: '512x512',
+            type: 'image/png',
+          },
+          {
+            src: 'icons/Icon-maskable-192.png',
+            sizes: '192x192',
+            type: 'image/png',
+            purpose: 'maskable',
+          },
+          {
+            src: 'icons/Icon-maskable-512.png',
+            sizes: '512x512',
+            type: 'image/png',
+            purpose: 'maskable',
+          },
+        ],
+      },
       workbox: {
         sourcemap: true,
         globPatterns: ['**/*.{css,js,html,svg,png,ico,txt,woff2}'],

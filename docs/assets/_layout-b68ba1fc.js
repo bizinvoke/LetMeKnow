@@ -1,1 +1,0 @@
-import{u as o,j as a,O as t,am as s}from"./index-a22ed925.js";const e=["/sample"];function i(){const n=o().pathname;return e.includes(n)?a(t,{}):s("div",{className:"main-layout",children:["main layout",a(t,{})]})}function l(){return a(i,{})}export{l as default};
