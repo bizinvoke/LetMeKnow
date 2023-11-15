@@ -102,34 +102,46 @@ function Home() {
         ],
       });
     });
-    fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${key}`,
-      },
-      body: JSON.stringify({
+
+    setIsRotate(true);
+    setContent(
+      JSON.stringify({
         model: 'gpt-4-vision-preview',
         messages,
         temperature: 0,
         max_tokens: 256,
       }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        setIsRotate(true);
-        console.log(data);
+    );
+    setLoading(false);
 
-        if (data?.choices[0]?.message?.content) {
-          setContent(data?.choices[0]?.message?.content);
-        }
-      })
-      .catch((error) => {
-        console.error(error);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+    // fetch('https://api.openai.com/v1/chat/completions', {
+    //   method: 'POST',
+    //   headers: {
+    //     'Content-Type': 'application/json',
+    //     Authorization: `Bearer ${key}`,
+    //   },
+    //   body: JSON.stringify({
+    //     model: 'gpt-4-vision-preview',
+    //     messages,
+    //     temperature: 0,
+    //     max_tokens: 256,
+    //   }),
+    // })
+    //   .then((response) => response.json())
+    //   .then((data) => {
+    //     setIsRotate(true);
+    //     console.log(data);
+
+    //     if (data?.choices[0]?.message?.content) {
+    //       setContent(data?.choices[0]?.message?.content);
+    //     }
+    //   })
+    //   .catch((error) => {
+    //     console.error(error);
+    //   })
+    //   .finally(() => {
+    //     setLoading(false);
+    //   });
   };
 
   const preciseAnswer = async () => {
@@ -171,6 +183,40 @@ function Home() {
 
       console.log('题目:', titles);
       console.log('问题:', questions);
+      const messages: any[] = [];
+      messages.push({
+        role: 'system',
+        content: `请按照下面的约束条件，对上传的内容进行理解并给出解读和答案。图片中的文本语言为「日语」`,
+      });
+      messages.push({
+        role: 'user',
+        content: `以下是题目：`,
+      });
+      titles.forEach((i) => {
+        messages.push({
+          role: 'user',
+          content: i,
+        });
+      });
+      messages.push({
+        role: 'user',
+        content: `以下是问题：`,
+      });
+      questions.forEach((i) => {
+        messages.push({
+          role: 'user',
+          content: i,
+        });
+      });
+      setIsRotate(true);
+      setContent(
+        JSON.stringify({
+          model: 'gpt-4-vision-preview',
+          messages,
+          temperature: 0,
+          max_tokens: 256,
+        }),
+      );
     } catch (error) {
       console.error('图片解析发生错误:', error);
     } finally {
