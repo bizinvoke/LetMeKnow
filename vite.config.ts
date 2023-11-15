@@ -53,12 +53,12 @@ export default defineConfig({
       },
       outDir: 'docs',
       buildBase: '/LetMeKnow/',
-      // workbox: {
-      //   globPatterns: ['**/*.{css,js,html,svg,png,ico,txt,woff2}'],
-      //   ignoreURLParametersMatching: [/.*/],
-      //   // globIgnores:[],
-      //   maximumFileSizeToCacheInBytes: 50000000,
-      // },
+      workbox: {
+        globPatterns: ['**/*.{css,js,html,svg,png,ico,txt,woff2}'],
+        ignoreURLParametersMatching: [/.*/],
+        // globIgnores:[],
+        maximumFileSizeToCacheInBytes: 50000000,
+      },
       devOptions: { enabled: true },
     }),
   ],
