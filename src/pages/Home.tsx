@@ -351,7 +351,11 @@ function Home() {
                   </Text>
                   <Switch
                     checked={type === 2}
-                    onChange={(isCheck) => setType(isCheck ? 2 : 1)}
+                    onChange={(isCheck) => {
+                      user === undefined
+                        ? onLoginWithGoogle()
+                        : setType(isCheck ? 2 : 1);
+                    }}
                   ></Switch>
                 </div>
               </div>
