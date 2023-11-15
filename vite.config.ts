@@ -51,8 +51,9 @@ export default defineConfig({
           },
         ],
       },
+      outDir: 'docs',
+      buildBase: '/docs/',
       workbox: {
-        sourcemap: true,
         globPatterns: ['**/*.{css,js,html,svg,png,ico,txt,woff2}'],
         ignoreURLParametersMatching: [/.*/],
         // globIgnores:[],
@@ -61,7 +62,7 @@ export default defineConfig({
     }),
   ],
   build: { outDir: 'docs' },
-  base: '/LetMeKnow',
+  base: '/LetMeKnow/',
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
