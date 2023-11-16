@@ -28,7 +28,7 @@ import {
   Switch,
   Typography,
 } from 'antd';
-import { Fragment, useEffect, useState } from 'react';
+import { Fragment, useEffect, useRef, useState } from 'react';
 
 const { Text } = Typography;
 function Home() {
@@ -41,6 +41,7 @@ function Home() {
   const [isOpenAttached, setIsOpenAttached] = useState(false);
   const [isRotate, setIsRotate] = useState(false);
   const [isRotateRender, setIsRotateRender] = useState(false);
+  const [isVoice, setIsVoice] = useState(false);
   const [language, setLanguage] = useState(1);
   const [type, setType] = useState(1);
   const [subject, setSubject] = useState(1);
@@ -54,6 +55,7 @@ function Home() {
   const [attachedImages, setAttachedImages] = useState<UploadFilePathModel[]>(
     [],
   );
+  const audioRef = useRef<HTMLAudioElement>(null);
 
   useEffect(() => {
     setLoading(true);
@@ -145,6 +147,37 @@ function Home() {
     //   });
   };
 
+  const voiceAnswer = () => {
+    fetch('https://api.openai.com/v1/audio/speech', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${key}`,
+      },
+      body: JSON.stringify({
+        model: 'tts-1-hd',
+        input: `In Japan, juku, or private supplementary schools, significantly enhance the academic performance of elementary and junior high school students. These institutions offer focused classes in subjects like mathematics, science, and languages, providing personalized attention due to smaller class sizes. Juku plays a crucial role in preparing students for entrance exams, aligning with high school and university requirements. Beyond academics, these schools instill discipline, strong work ethics, and effective study skills, fostering responsible and well-rounded students.
+        文章总结：日本小学和初中生通过参加私塾（juku）显著提升学业表现。私塾专注于数学、科学、语言等科目，班级规模小，提供个性化关注。私塾在入学考试准备方面起着至关重要的作用，同时培养纪律、强烈的职业道德和有效的学习技能，塑造负责任、全面发展的学生。`,
+        voice: 'alloy',
+      }),
+    })
+      .then((response) => response.blob())
+      .then(async (audioData) => {
+        const audioUrl = URL.createObjectURL(audioData);
+        const audio = new Audio(audioUrl);
+        audio.play();
+
+        const audioFile = new File([audioData], 'speech.mp3', {
+          type: 'audio/mp3',
+        });
+        onUploadImage(
+          audioFile,
+          () => {},
+          () => {},
+        );
+      });
+  };
+
   const preciseAnswer = async () => {
     if (titleImages.length === 0) {
       message.error('请上传题目');
@@ -184,6 +217,7 @@ function Home() {
 
       console.log('题目:', titles);
       console.log('问题:', questions);
+
       const messages: any[] = [];
       messages.push({
         role: 'system',
@@ -218,6 +252,10 @@ function Home() {
           max_tokens: 256,
         }),
       );
+      if (isVoice && audioRef.current !== null) {
+        audioRef.current.play();
+      }
+      // voiceAnswer();
     } catch (error) {
       console.error('图片解析发生错误:', error);
     } finally {
@@ -369,6 +407,17 @@ function Home() {
               </div>
               {type === 2 ? (
                 <div className="h-full w-full p-2">
+                  <div className="mb-2 flex items-center">
+                    <Text type="secondary" strong>
+                      语音解答:
+                    </Text>
+                    <Switch
+                      checked={isVoice}
+                      onChange={(isCheck) => {
+                        setIsVoice(isCheck);
+                      }}
+                    ></Switch>
+                  </div>
                   <div className=" w-full rounded bg-slate-50 p-2">
                     <div className="mb-2 flex items-center gap-1">
                       <div className=" h-4 w-2 bg-yellow-400" />
@@ -509,6 +558,9 @@ function Home() {
         onFinally={() => setIsOpenAttached(false)}
         multiple={false}
       />
+      <audio ref={audioRef} autoPlay={false}>
+        <source src="/voice/speech.mp3" type="audio/mpeg" />
+      </audio>
     </div>
   );
 }
