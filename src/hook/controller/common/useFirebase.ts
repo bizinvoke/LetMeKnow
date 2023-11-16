@@ -1,4 +1,5 @@
 import { useMount } from 'ahooks';
+import { message } from 'antd';
 import { initializeApp } from 'firebase/app';
 import { initializeAppCheck, ReCaptchaV3Provider } from 'firebase/app-check';
 import {
@@ -6,6 +7,7 @@ import {
   GoogleAuthProvider,
   onAuthStateChanged,
   signInWithRedirect,
+  signOut,
   User,
 } from 'firebase/auth';
 import { getBlob, getStorage, ref, uploadBytes } from 'firebase/storage';
@@ -56,5 +58,10 @@ export const useFirebase = () => {
     uploadBytes,
     storageReference: (name: string) => ref(storage, name),
     downloadFile: (name: string) => getBlob(ref(resultStorage, name)),
+    signOut: (cb: () => void) => {
+      signOut(auth)
+        .then(cb)
+        .catch((err) => message.error(`退出登录错误，请重试:${err}`));
+    },
   };
 };

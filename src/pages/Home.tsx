@@ -69,6 +69,7 @@ function Home() {
     storageReference,
     onLoginWithGoogle,
     user,
+    signOut,
   } = useFirebase();
 
   const handleClear = () => {
@@ -310,7 +311,16 @@ function Home() {
         {user === undefined ? (
           <RadiusSettingOutlined onClick={onLoginWithGoogle} />
         ) : (
-          user.displayName
+          <Text
+            onClick={() =>
+              signOut(() => {
+                handleClear();
+                setType(1);
+              })
+            }
+          >
+            {user.displayName}
+          </Text>
         )}
       </div>
       <div className="w-full flex-1 overflow-hidden p-2">
