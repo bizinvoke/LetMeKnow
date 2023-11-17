@@ -1,3 +1,4 @@
+import Logo from '@/assets/logo.svg?react';
 import ImageUploadInput, {
   UploadFilePathModel,
 } from '@/components/common/upload';
@@ -346,6 +347,7 @@ function Home() {
             setOpen(true);
           }}
         />
+        <Logo />
         {user === undefined ? (
           <RadiusSettingOutlined onClick={onLoginWithGoogle} />
         ) : (

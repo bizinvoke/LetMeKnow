@@ -20,7 +20,12 @@
     "paths": {
       "@/*": ["src/*"]
     },
-    "types": ["vite/client", "node", "vite-plugin-pwa/client"]
+    "types": [
+      "vite/client",
+      "node",
+      "vite-plugin-pwa/client",
+      "vite-plugin-svgr/client"
+    ]
   },
   "include": ["src"],
   "references": [{ "path": "./tsconfig.node.json" }]

@@ -3,6 +3,7 @@ import childProcess from 'child_process';
 import path from 'path';
 import { defineConfig } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
+import svgr from 'vite-plugin-svgr';
 
 const commitHash = childProcess
   .execSync('git rev-parse --short HEAD', {
@@ -14,6 +15,7 @@ const commitHash = childProcess
 export default defineConfig({
   plugins: [
     react(),
+    svgr({ include: '**/*.svg?react' }),
     VitePWA({
       base: '/LetMeKnow/',
       registerType: 'autoUpdate',
